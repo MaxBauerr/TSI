@@ -220,6 +220,9 @@ public class Main {
 
         System.out.print("The total cost for this job is: £" + totalCost);
 
+        // Riccardo test
+
+        
         scanner.close();
     }
 }
