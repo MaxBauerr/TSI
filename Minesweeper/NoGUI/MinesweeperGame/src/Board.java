@@ -1,3 +1,5 @@
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Random;
 
 public class Board {
@@ -5,6 +7,7 @@ public class Board {
     private final boolean[][] mines;
     private final int squareSize;
     private final int numMines;
+    private int loopCounter = 0;
 
     public Board(int squareSize, int numMines) {
         this.squareSize = squareSize;
@@ -18,12 +21,13 @@ public class Board {
     public void createBoard() {
         for (int x = 0; x < squareSize; x++) {
             for (int y = 0; y < squareSize; y++) {
-                board[x][y] = "_";
+                board[x][y] = "[-]";
             }
         }
     }
 
     private void placeMines() {
+        int counter = 0;
         Random random = new Random();
         int minesCount = 0;
         while (minesCount < numMines) {
@@ -37,6 +41,11 @@ public class Board {
     }
 
     public void displayBoard() {
+        if (loopCounter >= 1) {
+            int countDisplay = getSafeCells();
+            System.out.println("The total remaining cells that are safe is : " + countDisplay);
+        }
+        loopCounter += 1;
         for (int r = 0; r < squareSize; r++) {
             for (int c = 0; c < squareSize; c++) {
                 System.out.print(board[r][c] + " ");
@@ -55,23 +64,39 @@ public class Board {
     }
 
     public void changeBoard(int row, int col) {
-        if (!isInBounds(row, col) || !"_".equals(board[row][col])) {
+        if (!isInBounds(row, col) || !"[-]".equals(board[row][col])) {
             return;
         }
-
         int adjacentMines = countAdjacentMines(row, col);
         if (adjacentMines == 0) {
-            board[row][col] = "0";
+            board[row][col] = "\033[32m[0]\033[0m";
             uncoverAdjacentCells(row, col);
         } else {
-            board[row][col] = Integer.toString(adjacentMines);
+            board[row][col] = "\033[33m[" + Integer.toString(adjacentMines) + "]\033[0m";
+        }
+    }
+
+    public void displayEndBoard() {
+        if (loopCounter >= 1) {
+            int countDisplay = getSafeCells();
+            System.out.println("The total remaining cells that are safe is : " + countDisplay);
+        }
+        loopCounter += 1;
+        for (int r = 0; r < squareSize; r++) {
+            for (int c = 0; c < squareSize; c++) {
+                if (Objects.equals(board[r][c], "[-]")) {
+                    board[r][c] = "\033[31m[*]\033[0m";
+                }
+                System.out.print(board[r][c] + " ");
+            }
+            System.out.println();
         }
     }
 
     private void uncoverAdjacentCells(int row, int col) {
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
-                if (isInBounds(row + i, col + j) && "_".equals(board[row + i][col + j])) {
+                if (isInBounds(row + i, col + j) && "[-]".equals(board[row + i][col + j])) {
                     changeBoard(row + i, col + j);
                 }
             }
@@ -95,4 +120,15 @@ public class Board {
         return row >= 0 && row < squareSize && col >= 0 && col < squareSize;
     }
 
+    public int getSafeCells() {
+        int safeCells = 0;
+        for (int x = 0; x < squareSize; x++) {
+            for (int y = 0; y < squareSize; y++) {
+                if (Objects.equals(board[x][y], "[-]")) {
+                    safeCells += 1;
+                };
+            }
+        }
+        return safeCells-numMines;
+    }
 }
