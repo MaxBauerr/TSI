@@ -1,21 +1,19 @@
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class Board {
     private final String[][] board;
     private final boolean[][] mines;
     private final int squareSize;
     private final int numMines;
-    private int loopCounter = 0;
+    private int hintCount;
 
-    public Board(int squareSize, int numMines) {
+    public Board(int squareSize, int numMines, int hints) {
         this.squareSize = squareSize;
         this.numMines = numMines;
+        this.hintCount = hints;
         board = new String[squareSize][squareSize];
         mines = new boolean[squareSize][squareSize];
         createBoard();
-        placeMines();
     }
 
     public void createBoard() {
@@ -26,26 +24,26 @@ public class Board {
         }
     }
 
-    private void placeMines() {
-        int counter = 0;
+    public void placeMines(int firstRow, int firstCol) {
         Random random = new Random();
         int minesCount = 0;
         while (minesCount < numMines) {
             int row = random.nextInt(squareSize);
             int col = random.nextInt(squareSize);
-            if (!mines[row][col]) {
+            if (!mines[row][col] && !(row == firstRow && col == firstCol) && !isAdjacent(row, col, firstRow, firstCol)) { // Check if the random mine position is not the first move or adjacent to it
                 mines[row][col] = true;
                 minesCount++;
             }
         }
     }
 
+    private boolean isAdjacent(int row, int col, int firstRow, int firstCol) {
+        return Math.abs(row - firstRow) <= 1 && Math.abs(col - firstCol) <= 1;
+    }
+
     public void displayBoard() {
-        if (loopCounter >= 1) {
-            int countDisplay = getSafeCells();
-            System.out.println("The total remaining cells that are safe is : " + countDisplay);
-        }
-        loopCounter += 1;
+        int countDisplay = getSafeCells();
+        Printer.Statement.gameStats(countDisplay, getNumMines());
         for (int r = 0; r < squareSize; r++) {
             for (int c = 0; c < squareSize; c++) {
                 System.out.print(board[r][c] + " ");
@@ -58,7 +56,7 @@ public class Board {
         if (row >= 0 && row < squareSize && col >= 0 && col < squareSize) {
             return mines[row][col];
         } else {
-            System.out.println("Invalid position");
+            Printer.Invalid.position();
             return false;
         }
     }
@@ -76,16 +74,17 @@ public class Board {
         }
     }
 
-    public void displayEndBoard() {
-        if (loopCounter >= 1) {
-            int countDisplay = getSafeCells();
-            System.out.println("The total remaining cells that are safe is : " + countDisplay);
-        }
-        loopCounter += 1;
+    public void displayEndBoard(boolean isWin) {
+        int countDisplay = getSafeCells();
+        Printer.Statement.gameStats(countDisplay, getNumMines());
         for (int r = 0; r < squareSize; r++) {
             for (int c = 0; c < squareSize; c++) {
                 if (Objects.equals(board[r][c], "[-]")) {
-                    board[r][c] = "\033[31m[*]\033[0m";
+                    if (mines[r][c] && !isWin) {
+                        board[r][c] = "\033[31m[*]\033[0m"; // If the player has lost, display mines in red
+                    } else if (!mines[r][c] && !isWin) {
+                        board[r][c] = "\033[34m[+]\033[0m"; // If the player has lost, display not-discovered non-mines cells in blue
+                    }
                 }
                 System.out.print(board[r][c] + " ");
             }
@@ -102,7 +101,6 @@ public class Board {
             }
         }
     }
-
 
     private int countAdjacentMines(int row, int col) {
         int mineCount = 0;
@@ -131,4 +129,74 @@ public class Board {
         }
         return safeCells-numMines;
     }
+
+    public int getNumMines() {
+        return numMines;
+    }
+
+    public void cellFlag(int row, int col) {
+        if (Objects.equals(board[row][col], "[-]")) {
+            board[row][col] = "\033[31m[?]\033[0m";
+        } else {
+            Printer.Invalid.discoveredCell();
+        }
+    }
+
+    public void cellUnflag(int row, int col) {
+        if (Objects.equals(board[row][col], "\033[31m[?]\033[0m")) {
+            board[row][col] = "[-]";
+        } else {
+            Printer.Invalid.notFlaggedCell();
+        }
+    }
+
+    public void giveHint() {
+        if (hintCount > 0) {
+            List<int[]> unopenedCells = new ArrayList<>();
+            for (int row = 0; row < squareSize; row++) {
+                for (int col = 0; col < squareSize; col++) {
+                    if ("[-]".equals(board[row][col])) {
+                        unopenedCells.add(new int[]{row, col});
+                    }
+                }
+            }
+
+            if (unopenedCells.isEmpty()) {
+                Printer.Statement.hints(hintCount);
+                return;
+            }
+
+            Random random = new Random();
+            int[] selectedCell = unopenedCells.get(random.nextInt(unopenedCells.size()));
+
+            if (mines[selectedCell[0]][selectedCell[1]]) {
+                board[selectedCell[0]][selectedCell[1]] = "\033[95m[*]\033[0m"; // Mine in purple
+            } else {
+                revealHintedSafeCell(selectedCell[0], selectedCell[1]); // Reveals the cell in blue
+            }
+            hintCount -= 1;
+            Printer.Statement.hints(hintCount);
+        } else {
+            Printer.Statement.hints(hintCount);
+        }
+
+    }
+
+    public int getHintCount() {
+        return hintCount;
+    }
+
+    private void revealHintedSafeCell(int row, int col) {
+        if (!isInBounds(row, col) || !"[-]".equals(board[row][col])) {
+            return;
+        }
+        int adjacentMines = countAdjacentMines(row, col);
+        if (adjacentMines == 0) {
+            board[row][col] = "\033[95m[0]\033[0m";
+            uncoverAdjacentCells(row, col);
+        } else {
+            board[row][col] = "\033[95m[" + Integer.toString(adjacentMines) + "]\033[0m";
+        }
+    }
+
 }
