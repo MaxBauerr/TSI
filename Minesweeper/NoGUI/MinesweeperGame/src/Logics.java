@@ -2,9 +2,9 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Logics {
-    private static final Random rand = new Random();
+    private static final Random rand = new Random(); // Initialize randomness for mine count.
 
-    public static int calculateMines(int boardSize, int gameDifficulty) {
+    public static int calculateMines(int boardSize, int gameDifficulty) { // Allocate mine count depending on grid size and game difficulty
         int minMines = 0, maxMines = 0;
         switch (gameDifficulty) {
             case 1 -> { minMines = boardSize * boardSize * 5 / 100; maxMines = boardSize * boardSize * 10 / 100; }
@@ -16,7 +16,7 @@ public class Logics {
         return rand.nextInt(maxMines - minMines + 1) + minMines;
     }
 
-    public static int getValidBoardSize(Scanner scanner) { // Use passed scanner
+    public static int getValidBoardSize(Scanner scanner) { // Check if user input for board size meets minimum requirements
         Printer.Requests.minimumBoardSize();
         int boardSize;
         do {
@@ -32,7 +32,7 @@ public class Logics {
         return boardSize;
     }
 
-    public static int chooseDifficulty(Scanner scanner) { // Use passed scanner
+    public static int chooseDifficulty(Scanner scanner) { // Allow user to choose the difficulty of the game
         Printer.Options.gameDifficulty();
         int choice;
         do {
@@ -48,7 +48,11 @@ public class Logics {
         return choice;
     }
 
-    public static int hintCount(int difficultyChoice) {
+    public static int hintCount(int difficultyChoice) { // Calculate total available hints for the current game depending on the difficulty
         return difficultyChoice*3;
+    }
+
+    public static void timeCount(long start, long end) { // Calculate time spent for this game run.
+        Printer.Statement.timeStats(end-start);
     }
 }
