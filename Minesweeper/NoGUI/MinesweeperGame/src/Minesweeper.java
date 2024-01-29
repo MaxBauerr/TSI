@@ -19,7 +19,7 @@ public class Minesweeper {
         while (gameStatus) { // While the game is true (running), run the loop
             board.displayBoard(); // Display initial board with first move done and mines placed
             Printer.Options.runningGameOptions(board.getHintCount()); // Show player the in game options
-            int inGameChoice = sc.nextInt();
+            int inGameChoice = Logics.chooseGameChoice(sc);
             switch (inGameChoice) { // Depending on user input, game will act differently
                 case 1 -> {
                     // Standard move play condition
@@ -27,21 +27,11 @@ public class Minesweeper {
                     playMove((coordinates[0]), (coordinates[1]), startTime);
                     winCondition(startTime);
                 }
-                case 2 -> {
-                    optionFlagOrUnflag(true, sc); // Request user coordinates to flag an unused cell. Error handling implemented.
-                }
-                case 3 -> {
-                    optionFlagOrUnflag(false, sc); // Request user coordinates to remove existing flag. Error handling implemented.
-                }
-                case 4 -> {
-                    board.giveHint(); // Randomly allocate non-flipped cell and show true value, acts the same as the player choose the cell in option 1.
-                }
-                case 5 -> {
-                    gameEnd(startTime, true);
-                }
-                default -> {
-                    Printer.Invalid.optionRangeChoice(); // Error handling in case out of bounds
-                }
+                case 2 -> optionFlagOrUnflag(true, sc); // Request user coordinates to flag an unused cell. Error handling implemented.
+                case 3 -> optionFlagOrUnflag(false, sc); // Request user coordinates to remove existing flag. Error handling implemented.
+                case 4 -> board.giveHint(); // Randomly allocate non-flipped cell and show true value, acts the same as the player choose the cell in option 1.
+                case 5 -> gameEnd(startTime, true);
+                default -> Printer.Invalid.optionRangeChoice(); // Error handling in case out of bounds
             }
         }
     }
@@ -60,7 +50,7 @@ public class Minesweeper {
             gameEnd(startTime, false);
         }  else { // IF mine was not found, run standard logic.
             Printer.Statement.safeMove();
-            board.changeBoard(row, col);;
+            board.changeBoard(row, col);
         }
     }
 
@@ -73,9 +63,9 @@ public class Minesweeper {
     private int[] getRowAndColumn(Scanner sc) { // Request User game coordinates. As program starts with 0 on list counts, it automatically adjusts user input to -1.
         Printer.Statement.moveEntry();
         Printer.Requests.rowEntry();
-        int row = sc.nextInt();
+        int row = Logics.chooseCoordinates(sc);
         Printer.Requests.columnEntry();
-        int col = sc.nextInt();
+        int col = Logics.chooseCoordinates(sc);
         return new int[]{row-1, col-1};
     }
 

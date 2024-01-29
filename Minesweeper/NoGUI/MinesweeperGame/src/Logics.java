@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -54,5 +55,37 @@ public class Logics {
 
     public static void timeCount(long start, long end) { // Calculate time spent for this game run.
         Printer.Statement.timeStats(end-start);
+    }
+
+
+    public static int chooseGameChoice(Scanner scanner) { // Allow user to choose next game action
+        Printer.Options.gameDifficulty();
+        int choice;
+        do {
+            while (!scanner.hasNextInt()) {
+                Printer.Invalid.integerValue();
+                scanner.next();
+            }
+            choice = scanner.nextInt();
+            if (choice < 1) {
+                Printer.Invalid.optionRangeChoice();
+            }
+        } while (choice < 1);
+        return choice;
+    }
+
+    public static int chooseCoordinates(Scanner scanner) { // Allow user to choose next game action
+        int move;
+        do {
+            while (!scanner.hasNextInt()) {
+                Printer.Invalid.integerValue();
+                scanner.next();
+            }
+            move = scanner.nextInt();
+            if (move < 1) {
+                Printer.Invalid.position();
+            }
+        } while (move < 1);
+        return move;
     }
 }

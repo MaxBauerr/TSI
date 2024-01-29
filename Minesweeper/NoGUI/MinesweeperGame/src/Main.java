@@ -14,12 +14,3 @@ public class Main {
         }
     }
 }
-
-/*
-        *** SOLVE THESE ISSUES ***
-    * During move inputs, for both row and column need to implement Error Handling as it crashes the game. Add this to the Logics for the game.
-    * In Game Menu crashes on wrong input given, like a char. Implement Error handling. Add this to the Logics of the game.
-    * Add readability for rows and columns
-    * Consider using GUI
-    * Change initial move criteria from cannot be anything else other than 0 to it can be anything except mine.
- */
