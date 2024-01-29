@@ -33,6 +33,32 @@ public class Logics {
         return boardSize;
     }
 
+
+
+    public static int hintCount(int difficultyChoice) { // Calculate total available hints for the current game depending on the difficulty
+        return difficultyChoice*3;
+    }
+
+    public static void timeCount(long start, long end) { // Calculate time spent for this game run.
+        Printer.Statement.timeStats(end-start);
+    }
+
+
+    public static int chooseGameChoice(Scanner scanner) { // Allow user to choose next game action
+        int choice;
+        do {
+            while (!scanner.hasNextInt()) {
+                Printer.Invalid.integerValue();
+                scanner.next();
+            }
+            choice = scanner.nextInt();
+            if (choice < 1) {
+                Printer.Invalid.optionRangeChoice();
+            }
+        } while (choice < 1);
+        return choice;
+    }
+
     public static int chooseDifficulty(Scanner scanner) { // Allow user to choose the difficulty of the game
         Printer.Options.gameDifficulty();
         int choice;
@@ -46,31 +72,6 @@ public class Logics {
                 Printer.Invalid.optionRangeChoice();
             }
         } while (choice < 1 || choice > 5);
-        return choice;
-    }
-
-    public static int hintCount(int difficultyChoice) { // Calculate total available hints for the current game depending on the difficulty
-        return difficultyChoice*3;
-    }
-
-    public static void timeCount(long start, long end) { // Calculate time spent for this game run.
-        Printer.Statement.timeStats(end-start);
-    }
-
-
-    public static int chooseGameChoice(Scanner scanner) { // Allow user to choose next game action
-        Printer.Options.gameDifficulty();
-        int choice;
-        do {
-            while (!scanner.hasNextInt()) {
-                Printer.Invalid.integerValue();
-                scanner.next();
-            }
-            choice = scanner.nextInt();
-            if (choice < 1) {
-                Printer.Invalid.optionRangeChoice();
-            }
-        } while (choice < 1);
         return choice;
     }
 
