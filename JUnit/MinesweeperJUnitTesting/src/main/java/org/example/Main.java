@@ -1,3 +1,5 @@
+package org.example;
+
 import java.util.Scanner;
 
 public class Main {
@@ -14,11 +16,3 @@ public class Main {
         }
     }
 }
-
-/*
- *** SOLVE THESE ISSUES ***
- * Add readability for rows and columns
- * Consider using GUI
- * Change initial move criteria FROM cannot be anything else other than 0 TO it can be anything except mine.
- * Change Color logic to separate different True Values
- */

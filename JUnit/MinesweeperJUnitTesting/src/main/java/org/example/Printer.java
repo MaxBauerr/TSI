@@ -1,3 +1,5 @@
+package org.example;
+
 public class Printer {
     static int moveCounter = 0; // Counts player action made in game, this is used to display the right message for first player action and further action
 
