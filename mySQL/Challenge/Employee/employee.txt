@@ -1,0 +1,11 @@
+1. SELECT * FROM employee WHERE Department = 'Sales' AND City = 'London'
+
+2. SELECT * FROM employee WHERE Salary > 24000
+
+3. INSERT INTO employee (ID, Name, Surname, City, Department, Salary) 
+	VALUES (6, 'Andrew', 'Violet', 'Berlin', 'IT', 45000)
+
+4. SELECT DISTINCT Department FROM employee
+
+
+
